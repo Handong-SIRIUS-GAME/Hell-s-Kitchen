@@ -4,27 +4,22 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    // 이동 관련 설정 변수
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;
-    public float jumpForce = 7f;
+    public float moveSpeed = 5f;    // 좌우 이동 속도
+    public float jumpForce = 7f;    // 점프 힘 (위로 가하는 속도)
 
-    [Header("Knockback Settings")]
-    public float knockbackForce = 5f;
-    public float knockbackDuration = 0.5f;
+    // 내부 상태 변수
+    private Rigidbody2D rb;             // 물리 연산용 Rigidbody2D
+    private Animator animator;          // 애니메이터 제어
+    private float moveInputX;           // 좌우 입력값 (-1 ~ 1)
+    private bool isGrounded;            // 지면 접촉 여부
+    private bool isFacingRight = true;  // 오른쪽을 보고 있는지 여부
 
-    // --- 내부 상태 변수 ---
-    private bool isHurting = false;
-    private Rigidbody2D rb;
-    private Animator animator;
-    private float moveInputX;
-    private bool isGrounded;
-    private bool isFacingRight = true;
-
-    // --- 상호작용 관련 변수 ---
-    private bool canInteract = false;
-    private GameObject interactableItem = null;
-    private GameObject heldItem = null; // 획득하여 귀속된 아이템
-
+    // 상호작용 관련 변수
+    private bool canInteract = false;           // 상호작용 가능한 범위에 있는가?
+    public GameObject interactableItem = null; // 현재 상호작용 가능한 아이템
+    private GameObject heldItem = null;         // 플레이어가 소유한(들고 있는) 아이템
 
     void Awake()
     {
@@ -34,51 +29,44 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!isHurting)
-        {
-            Flip();
-            animator.SetFloat("Speed", Mathf.Abs(moveInputX));
-            animator.SetBool("isJumping", !isGrounded);
-        }
+        Flip();     // 이동 방향에 따라 캐릭터 좌우 반전
+        animator.SetFloat("Speed", Mathf.Abs(moveInputX));  // 이동 속도(절댓값) 전달
+        animator.SetBool("isJumping", !isGrounded);         // 공중 여부에 따라 점프 애니메이션 제어
     }
 
     void FixedUpdate()
     {
-        if (!isHurting)
-        {
-            rb.linearVelocity = new Vector2(moveInputX * moveSpeed, rb.linearVelocity.y);
-        }
+        // Rigidbody의 X축 속도를 moveInputX에 맞게 설정
+        rb.linearVelocity = new Vector2(moveInputX * moveSpeed, rb.linearVelocity.y);
+        // 항상 지면 체크
         CheckGrounded();
     }
 
     // --- Input System 이벤트 핸들러 ---
-
     public void OnMove(InputValue value)
     {
-        if (!isHurting)
-        {
-            moveInputX = value.Get<float>();
-        }
-        else
-        {
-            moveInputX = 0f;
-        }
+        // -1(왼쪽), 0(중립), 1(오른쪽)
+        moveInputX = value.Get<float>();
     }
 
+    // 점프 입력 처리
     public void OnJump(InputValue value)
     {
-        if (isHurting || !isGrounded) return;
+        // 공중이면 점프 불가
+        if (!isGrounded) return;
 
         if (value.isPressed)
         {
+            // 위 방향으로 jumpForce만큼 속도를 주어 점프
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
     }
 
+    // 상호작용 입력 처리
     public void OnInteract(InputValue value)
     {
-        // 다치고 있거나, 상호작용 범위가 아니거나, 이미 아이템을 들고 있으면(heldItem != null) 종료
-        if (isHurting || !canInteract || heldItem != null) return;
+        // 상호작용 범위가 아니거나, 이미 아이템을 들고 있으면(heldItem != null) 종료
+        if (!canInteract || heldItem != null) return;
 
         if (value.isPressed)
         {
@@ -103,17 +91,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 1. 스파이크 감지
-        if (other.CompareTag("Spike") && !isHurting)
-        {
-            StartCoroutine(HurtRoutine());
-        }
-        // 2. 아이템 감지 (단, 내가 아이템을 들고 있지 않을 때만)
-        else if (other.CompareTag("Item") && heldItem == null)
+        // 아이템 감지 (단, 내가 아이템을 들고 있지 않을 때만)
+        if (other.CompareTag("Item") && heldItem == null)
         {
             Debug.Log("아이템 범위 진입");
-            canInteract = true;
-            interactableItem = other.gameObject;
+            canInteract = true; // 상호작용 가능
+            interactableItem = other.gameObject;    // 현재 아이템 저장
         }
     }
 
@@ -128,25 +111,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- 코루틴 ---
-
-    private IEnumerator HurtRoutine()
-    {
-        isHurting = true;
-        moveInputX = 0f;
-        rb.linearVelocity = Vector2.zero;
-        animator.Play("Hurt");
-
-        float knockbackDirection = isFacingRight ? -1 : 1;
-        rb.AddForce(new Vector2(knockbackDirection * knockbackForce, knockbackForce * 0.8f), ForceMode2D.Impulse);
-
-        yield return new WaitForSeconds(knockbackDuration);
-
-        isHurting = false;
-    }
-
     // --- 기타 유틸리티 함수 ---
 
+    // 캐릭터 좌우 반전 처리
     private void Flip()
     {
         if ((isFacingRight && moveInputX < 0f) || (!isFacingRight && moveInputX > 0f))
@@ -158,9 +125,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 바닥 감지 (Raycast)
     private void CheckGrounded()
     {
+         // 캐릭터 중심에서 아래로 1.1 유닛 거리로 레이캐스트를 쏴서 'Ground' 레이어와 충돌 확인
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.1f, LayerMask.GetMask("Ground"));
-        isGrounded = (hit.collider != null);
+        isGrounded = (hit.collider != null);    // 충돌이 있으면 바닥에 닿아 있음
     }
 }
