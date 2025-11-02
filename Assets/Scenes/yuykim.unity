@@ -270,6 +270,8 @@ GameObject:
   - component: {fileID: 291961052}
   - component: {fileID: 291961057}
   - component: {fileID: 291961056}
+  - component: {fileID: 291961060}
+  - component: {fileID: 291961059}
   - component: {fileID: 291961058}
   m_Layer: 0
   m_Name: Player
@@ -484,13 +486,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 291961051}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e319b7af31898f249b2e47fbd8ed83fe, type: 3}
+  m_Script: {fileID: 11500000, guid: 1f3c5eee913918944989284969ed2671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+--- !u!114 &291961059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291961051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6bd47bf381656409198ebce5ac2d40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteract
+  defaultInteractable: {fileID: 0}
+--- !u!114 &291961060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291961051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07da96117741f5d49a2ab8e814fda14c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
   jumpForce: 7
-  knockbackForce: 5
-  knockbackDuration: 0.5
+  groundCheckDistance: 1.1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &509837901
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,7 +809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   player: {fileID: 291961055}
   smoothSpeed: 0.05
-  offset: {x: 0, y: 10, z: -10}
+  offset: {x: 0, y: 1, z: -10}
 --- !u!1 &547184911
 GameObject:
   m_ObjectHideFlags: 0
