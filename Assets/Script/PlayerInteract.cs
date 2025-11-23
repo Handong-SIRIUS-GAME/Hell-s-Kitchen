@@ -19,6 +19,11 @@ public class PlayerInteract : MonoBehaviour
     private bool isInKitchenArea = false;       // (부엌 감지) 부엌 범위 안인가?
     private KitchenArea currentKitchen = null; // (부엌 감지) 현재 감지된 부엌 스크립트
 
+    [Header("Hold Position Settings")]
+    [SerializeField] private Vector2 holdOffset = new Vector2(0f, 1.5f); 
+    // X: 좌우, Y: 플레이어 기준 위쪽 거리
+
+
     /// <summary>
     /// PlayerController가 'Interact' 키(F키) 입력을 받으면 호출하는 메인 함수
     /// </summary>
@@ -62,28 +67,33 @@ public class PlayerInteract : MonoBehaviour
     {
         Debug.Log(itemObj.name + " 아이템을 획득했다!");
 
-        // 1. '들고 있는 아이템'으로 이 게임 오브젝트를 등록
         heldItem = itemObj;
 
-        // 2. [버그 수정] 아이템의 InteractableItem 스크립트를 가져옴
+        // InteractableItem 스크립트 처리
         InteractableItem itemScript = heldItem.GetComponent<InteractableItem>();
         if (itemScript != null)
-        {
-            // 3. [버그 수정] 아이템에게 "너 주워졌어!"라고 알려줌
-            // (아이템은 이 함수가 호출되면 둥둥거림(Update)을 멈춤)
             itemScript.OnPickedUp();
-        }
 
-        // 4. 아이템을 플레이어의 자식으로 만듦 (플레이어를 따라다니게 함 - 필수는 아님)
+        // ➊ ItemMove 스크립트 비활성화
+        ItemMove mover = heldItem.GetComponent<ItemMove>();
+        if (mover != null)
+            mover.enabled = false;
+
+        // 부모를 플레이어로 설정
         heldItem.transform.SetParent(transform);
 
-        // 5. 아이템을 비활성화 (중요! 화면에서 숨김)
-        heldItem.SetActive(false);
+        // 머리 위 위치로 올리기 (네가 쓰던 위치값 적용)
+        heldItem.transform.localPosition = new Vector3(holdOffset.x, holdOffset.y, 0f);
 
-        // 6. 상태 초기화 (더 이상 다른 아이템을 주울 수 없게)
+        // 혹시 비활성화되어 있으면 다시 활성화
+        heldItem.SetActive(true);
+
+        // 상태 초기화
         canInteract = false;
         targetItem = null;
     }
+
+
 
     /// <summary>
     /// 아이템을 부엌에 내려놓는(드롭하는) 함수
