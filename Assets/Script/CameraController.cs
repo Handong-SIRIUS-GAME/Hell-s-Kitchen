@@ -3,22 +3,18 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Transform player;
+    public float followSpeed = 5f;
+    public Vector3 offset = new Vector3(0, 2, -10);
 
-    public float smoothSpeed = 0.125f;
-
-    public Vector3 offset;
-
-    void LateUpdate()
+    private void LateUpdate()
     {
-        if (player == null)
-        {
-            return;
-        }
+        if (player == null) return;
 
-        Vector3 desiredPosition = player.position + offset;
+        Vector3 targetPos = player.position + offset;
 
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-
-        transform.position = smoothedPosition;
+        // 부드럽게 따라가기
+        // t = 1 - exp(-k * dt) 형태라 프레임에 덜 민감함
+        float t = 1f - Mathf.Exp(-followSpeed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, targetPos, t);
     }
 }

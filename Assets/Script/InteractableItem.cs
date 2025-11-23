@@ -26,17 +26,8 @@ public class InteractableItem : MonoBehaviour
     [Tooltip("부엌에 재료를 뒀을 때 UI에 표시될 이미지")]
     public Sprite itemSprite; // 부엌(KitchenArea)의 UI 슬롯에 표시될 스프라이트 에셋
 
-
-    [Header("Floating Motion Settings")]
-    private float floatAmplitude = 0.2f; // 둥둥 떠다니는 폭
-    private float floatSpeed = 8f;       // 둥둥 떠다니는 속도
-    private Vector3 startPos;            // 아이템의 원래 시작 위치
-    private bool isFloating = true;      // 현재 둥둥 떠다니는 효과가 활성화되어 있는지 여부
-
     void Start()
     {
-        // 아이템의 시작 위치를 저장 (이 위치를 기준으로 위아래로 움직임)
-        startPos = transform.position;
 
         // [오류 방지] Inspector 창에서 itemSprite를 할당했는지 확인
         if (itemSprite == null)
@@ -53,14 +44,7 @@ public class InteractableItem : MonoBehaviour
 
     void Update()
     {
-        // 'isFloating'이 true일 때만 둥둥 떠다니는 로직을 실행
-        // (플레이어가 주워가면 이 값이 false가 되어 Update 로직이 멈춤)
-        if (isFloating)
-        {
-            // 사인 함수를 이용해 부드러운 상하 이동 계산
-            float newY = startPos.y + Mathf.Sin(Time.time * floatSpeed) * floatAmplitude;
-            transform.position = new Vector3(startPos.x, newY, startPos.z);
-        }
+
     }
 
     /// <summary>
@@ -68,9 +52,6 @@ public class InteractableItem : MonoBehaviour
     /// </summary>
     public void OnPickedUp()
     {
-        // 1. 둥둥 떠다니는 효과를 멈춤 (Update 로직 정지)
-        isFloating = false;
-
         // 2. 콜라이더를 비활성화
         // (플레이어가 들고 있는 동안, 다른 아이템이나 부엌 영역에 감지되면 안 되기 때문)
         Collider2D col = GetComponent<Collider2D>();

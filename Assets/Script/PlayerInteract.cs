@@ -3,19 +3,23 @@ using UnityEngine;
 public class PlayerInteract : MonoBehaviour
 {
     [Header("Interact Settings")]
-    [SerializeField] private InteractableItem defaultInteractable;
+    [SerializeField] private InteractableItem defaultInteractable; // (사용 안 함, 무시해도 됨)
 
-    // [추가됨] 아이템이 매달릴 위치 (플레이어 머리 위)
-    [Tooltip("아이템을 들었을 때 위치할 플레이어의 자식 오브젝트 (머리 위)")]
-    public Transform itemHoldPoint;
+    // --- 플레이어의 현재 상태 변수 ---
+    private bool canInteract = false;          // (아이템 감지) 주울 수 있는 아이템 범위 안인가?
+    private InteractableItem targetItem = null; // (아이템 감지) 현재 주울 수 있는 대상 아이템
+    private GameObject heldItem = null;         // (아이템 소지) 현재 손에 들고 있는 아이템
+    private bool isInKitchenArea = false;       // (부엌 감지) 부엌 범위 안인가?
+    private KitchenArea currentKitchen = null; // (부엌 감지) 현재 감지된 부엌 스크립트
 
-    private bool canInteract = false;
-    private InteractableItem targetItem = null;
-    private GameObject heldItem = null;
+    [Header("Hold Position Settings")]
+    [SerializeField] private Vector2 holdOffset = new Vector2(0f, 1.5f); 
+    // X: 좌우, Y: 플레이어 기준 위쪽 거리
 
-    private bool isInKitchenArea = false;
-    private KitchenArea currentKitchen = null;
 
+    /// <summary>
+    /// PlayerController가 'Interact' 키(F키) 입력을 받으면 호출하는 메인 함수
+    /// </summary>
     public void TryInteract()
     {
         // 1. 아이템을 들고 있을 때 -> 내려놓기(Drop) 시도
@@ -48,43 +52,38 @@ public class PlayerInteract : MonoBehaviour
     private void Pickup(GameObject itemObj)
     {
         Debug.Log(itemObj.name + " 아이템을 획득했다!");
+
         heldItem = itemObj;
 
-        // 1. 둥둥 떠다니는 효과 끄기 (InteractableItem 스크립트 기능)
+        // InteractableItem 스크립트 처리
         InteractableItem itemScript = heldItem.GetComponent<InteractableItem>();
         if (itemScript != null)
-        {
             itemScript.OnPickedUp();
-        }
 
-        // 2. [수정됨] 물리 충돌 끄기 (중요: 머리 위에 있는 아이템이 플레이어를 밀면 안됨)
-        Collider2D itemCol = heldItem.GetComponent<Collider2D>();
-        if (itemCol != null)
-        {
-            itemCol.enabled = false;
-        }
+        // ➊ ItemMove 스크립트 비활성화
+        ItemMove mover = heldItem.GetComponent<ItemMove>();
+        if (mover != null)
+            mover.enabled = false;
 
-        // 3. [핵심] 아이템을 '머리 위 위치(itemHoldPoint)'의 자식으로 설정
-        if (itemHoldPoint != null)
-        {
-            heldItem.transform.SetParent(itemHoldPoint);
-            // 위치를 (0,0,0)으로 초기화하면 itemHoldPoint의 정확한 위치에 붙습니다.
-            heldItem.transform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            // 만약 itemHoldPoint를 안 만들었다면 그냥 플레이어 중심에 붙임
-            heldItem.transform.SetParent(transform);
-            heldItem.transform.localPosition = new Vector3(0, 1.5f, 0); // 대략 머리 위
-        }
+        // 부모를 플레이어로 설정
+        heldItem.transform.SetParent(transform);
 
-        // 4. [수정됨] 아이템을 숨기지 않음! (SetActive(false) 삭제)
-        // heldItem.SetActive(false); <--- 이 코드를 지웠습니다.
+        // 머리 위 위치로 올리기 (네가 쓰던 위치값 적용)
+        heldItem.transform.localPosition = new Vector3(holdOffset.x, holdOffset.y, 0f);
 
+        // 혹시 비활성화되어 있으면 다시 활성화
+        heldItem.SetActive(true);
+
+        // 상태 초기화
         canInteract = false;
         targetItem = null;
     }
 
+
+
+    /// <summary>
+    /// 아이템을 부엌에 내려놓는(드롭하는) 함수
+    /// </summary>
     private void TryDrop(KitchenArea kitchen)
     {
         InteractableItem itemData = heldItem.GetComponent<InteractableItem>();
