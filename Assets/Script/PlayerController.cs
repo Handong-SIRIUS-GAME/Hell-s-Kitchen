@@ -5,35 +5,44 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInteract))]
 public class PlayerController : MonoBehaviour
 {
-    private PlayerMovement movement;   // 이동 전담 스크립트
-    private PlayerInteract interact;   // 아이템 전담 스크립트
+    private PlayerMovement movement;
+    private PlayerInteract interact;
 
     private void Awake()
     {
-        // 같은 오브젝트에 붙어있는 컴포넌트 찾아두기
         movement = GetComponent<PlayerMovement>();
         interact = GetComponent<PlayerInteract>();
     }
 
-    // ───────── Input System 이벤트들 ─────────
-
-    // 이동 입력 (-1 ~ 1)
+    // 1. 이동 (Move)
     public void OnMove(InputValue value)
     {
         float x = value.Get<float>();
         movement.SetMoveInput(x);
     }
 
-    // 점프 입력
+    // 2. 점프 (Jump - Space)
     public void OnJump(InputValue value)
     {
         if (value.isPressed)
         {
+            Debug.Log("Jump(Space) 키 입력됨");
             movement.TryJump();
         }
     }
 
-    // 상호작용 입력
+    // 3. 하향 점프 (JumpDown - S)
+    // [중요] Input Action 이름을 "JumpDown"(띄어쓰기 없음)으로 해주세요.
+    public void OnJumpDown(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            Debug.Log("JumpDown(S) 키 입력됨");
+            movement.TryJumpDown();
+        }
+    }
+
+    // 4. 상호작용 (Interact - F)
     public void OnInteract(InputValue value)
     {
         if (value.isPressed)
