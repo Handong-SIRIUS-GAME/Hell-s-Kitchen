@@ -4,46 +4,25 @@ public class ItemMove : MonoBehaviour
 {
     public enum MoveMode
     {
-        Horizontal = 1, // ì¢Œìš° ?´ë™
-        Vertical = 2,   // ?„ì•„???´ë™
-        Circle   = 3,   // ???´ë™
-        Teleport = 4    // ?œê°„?´ë™
+        Horizontal = 1, // 좌우 이동
+        Vertical = 2,   // 위아래 이동
+        Circle = 3,   // 원 운동
+        Teleport = 4    // 순간이동
     }
 
-    [Header("ê¸°ë³¸ ?¤ì •")]
-    public MoveMode mode = MoveMode.Horizontal; // ?¸ìŠ¤?™í„°?ì„œ ëª¨ë“œ ? íƒ
-    public float distance = 2f;                  // ì¢Œìš°/?„ì•„???´ë™ ê±°ë¦¬
-    public float speed = 2f;                     // ?´ë™/?Œì „ ?ë„
+    [Header("기본 설정")]
+    public MoveMode mode = MoveMode.Horizontal; // 인스펙터에서 모드 선택
+    public float distance = 2f;                  // 좌우/위아래 이동 거리
+    public float speed = 2f;                     // 이동/회전 속도
 
-    [Header("???´ë™ ?¤ì • (Circle ëª¨ë“œ ?¬ìš©)")]
-    public float radius = 2f;                    // ??ë°˜ì?ë¦?
+    [Header("원 운동 설정 (Circle 모드 사용)")]
+    public float radius = 2f;                    // 원 반지름
 
-    [Header("?œê°„?´ë™ ?¤ì • (Teleport ëª¨ë“œ ?¬ìš©)")]
-    public Transform point1;                     // 1ë²??„ì¹˜
-    public Transform point2;                     // 2ë²??„ì¹˜
-    public Transform point3;                     // 3ë²??„ì¹˜
-    public float teleportInterval = 1.0f;        // ëª?ì´ˆë§ˆ???œê°„?´ë™? ì?
-
-        Horizontal = 1, // ÁÂ¿ì ÀÌµ¿
-        Vertical = 2,   // À§¾Æ·¡ ÀÌµ¿
-        Circle = 3,   // ¿ø ¿îµ¿
-        Teleport = 4    // ¼ø°£ÀÌµ¿
-    }
-
-    [Header("±âº» ¼³Á¤")]
-    public MoveMode mode = MoveMode.Horizontal; // ÀÎ½ºÆåÅÍ¿¡¼­ ¸ðµå ¼±ÅÃ
-    public float distance = 2f;                  // ÁÂ¿ì/À§¾Æ·¡ ÀÌµ¿ °Å¸®
-    public float speed = 2f;                     // ÀÌµ¿/È¸Àü ¼Óµµ
-
-    [Header("¿ø ¿îµ¿ ¼³Á¤ (Circle ¸ðµå »ç¿ë)")]
-    public float radius = 2f;                    // ¿ø ¹ÝÁö¸§
-
-    [Header("¼ø°£ÀÌµ¿ ¼³Á¤ (Teleport ¸ðµå »ç¿ë)")]
-    public Transform point1;                     // 1¹ø À§Ä¡
-    public Transform point2;                     // 2¹ø À§Ä¡
-    public Transform point3;                     // 3¹ø À§Ä¡
-    public float teleportInterval = 1.0f;        // ¸î ÃÊ¸¶´Ù ¼ø°£ÀÌµ¿ÇÒÁö
-
+    [Header("순간이동 설정 (Teleport 모드 사용)")]
+    public Transform point1;                     // 1번 위치
+    public Transform point2;                     // 2번 위치
+    public Transform point3;                     // 3번 위치
+    public float teleportInterval = 1.0f;        // 몇 초마다 순간이동할지
 
     private Vector3 startPos;
     private float teleportTimer = 0f;
@@ -53,6 +32,7 @@ public class ItemMove : MonoBehaviour
     {
         startPos = transform.position;
 
+        // Teleport 모드일 때 시작 위치를 첫 포인트로 맞춰줌 (있으면)
         if (mode == MoveMode.Teleport)
         {
             Transform first = GetTeleportTarget(0);
@@ -83,21 +63,21 @@ public class ItemMove : MonoBehaviour
         }
     }
 
+    // 1번 모드: 좌우 이동
     void MoveHorizontal()
     {
         float newX = startPos.x + Mathf.Sin(Time.time * speed) * distance;
         transform.position = new Vector3(newX, startPos.y, startPos.z);
     }
 
->>>>>>> Stashed changes
+    // 2번 모드: 위아래 이동
     void MoveVertical()
     {
         float newY = startPos.y + Mathf.Sin(Time.time * speed) * distance;
         transform.position = new Vector3(startPos.x, newY, startPos.z);
     }
 
-
->>>>>>> Stashed changes
+    // 3번 모드: 원을 그리면서 이동
     void MoveCircle()
     {
         float t = Time.time * speed;
@@ -106,7 +86,7 @@ public class ItemMove : MonoBehaviour
         transform.position = new Vector3(newX, newY, startPos.z);
     }
 
-
+    // 4번 모드: 1,2,3번 위치를 순서대로 순간이동
     void TeleportMove()
     {
         teleportTimer += Time.deltaTime;
@@ -114,10 +94,7 @@ public class ItemMove : MonoBehaviour
         {
             teleportTimer = 0f;
 
-
-            teleportIndex = (teleportIndex + 1) % 3; // 0 ??1 ??2 ??0 ??
-
-            teleportIndex = (teleportIndex + 1) % 3; // 0 ¡æ 1 ¡æ 2 ¡æ 0 ¡¦
+            teleportIndex = (teleportIndex + 1) % 3; // 0 → 1 → 2 → 0 …
 
             Transform target = GetTeleportTarget(teleportIndex);
             if (target != null)
@@ -127,6 +104,7 @@ public class ItemMove : MonoBehaviour
         }
     }
 
+    // 인덱스에 따라 point1/2/3 반환
     Transform GetTeleportTarget(int index)
     {
         switch (index)
@@ -137,3 +115,4 @@ public class ItemMove : MonoBehaviour
             default: return null;
         }
     }
+}
