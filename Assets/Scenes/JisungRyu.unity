@@ -364,6 +364,7 @@ GameObject:
   - component: {fileID: 131326585}
   - component: {fileID: 131326588}
   - component: {fileID: 131326589}
+  - component: {fileID: 131326590}
   m_Layer: 10
   m_Name: Ingredient1
   m_TagString: Item
@@ -517,6 +518,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ba1db264f89b1c4ca0649418e7fcfaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveLeftRight
+  mode: 1
+  distance: 2
+  speed: 2
+  radius: 0
+  point1: {fileID: 0}
+  point2: {fileID: 0}
+  point3: {fileID: 0}
+  teleportInterval: 1
+--- !u!114 &131326590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131326584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba1db264f89b1c4ca0649418e7fcfaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemMove
   mode: 1
   distance: 2
   speed: 2
@@ -757,6 +778,7 @@ GameObject:
   - component: {fileID: 204060905}
   - component: {fileID: 204060904}
   - component: {fileID: 204060903}
+  - component: {fileID: 204060907}
   m_Layer: 10
   m_Name: Ingredient2
   m_TagString: Item
@@ -791,10 +813,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ba1db264f89b1c4ca0649418e7fcfaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveLeftRight
-  mode: 3
+  mode: 1
   distance: 2
-  speed: 4
-  radius: 5
+  speed: 2
+  radius: 1
   point1: {fileID: 0}
   point2: {fileID: 0}
   point3: {fileID: 0}
@@ -918,6 +940,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &204060907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204060901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba1db264f89b1c4ca0649418e7fcfaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemMove
+  mode: 1
+  distance: 2
+  speed: 2
+  radius: 2
+  point1: {fileID: 0}
+  point2: {fileID: 0}
+  point3: {fileID: 0}
+  teleportInterval: 1
 --- !u!1 &291961051
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,6 +1552,7 @@ GameObject:
   - component: {fileID: 517778826}
   - component: {fileID: 517778825}
   - component: {fileID: 517778824}
+  - component: {fileID: 517778828}
   m_Layer: 10
   m_Name: Ingredient3
   m_TagString: Item
@@ -1544,13 +1587,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ba1db264f89b1c4ca0649418e7fcfaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveLeftRight
-  mode: 4
+  mode: 1
   distance: 2
   speed: 2
   radius: 2
-  point1: {fileID: 187303402}
-  point2: {fileID: 145465262}
-  point3: {fileID: 1275446287}
+  point1: {fileID: 0}
+  point2: {fileID: 0}
+  point3: {fileID: 0}
   teleportInterval: 1
 --- !u!114 &517778825
 MonoBehaviour:
@@ -1671,6 +1714,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &517778828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517778822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba1db264f89b1c4ca0649418e7fcfaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemMove
+  mode: 1
+  distance: 2
+  speed: 2
+  radius: 2
+  point1: {fileID: 0}
+  point2: {fileID: 0}
+  point3: {fileID: 0}
+  teleportInterval: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1822,7 +1885,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   player: {fileID: 291961055}
-  followSpeed: 5
+  smoothSpeed: 0.125
   offset: {x: 0, y: 2, z: -10}
 --- !u!1 &531712576
 GameObject:
@@ -2514,7 +2577,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8525fb873df0cb4095cc8b74a513f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FallZone
-  gameOverSceneName: GameOver
 --- !u!61 &1126510791
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2999,7 +3061,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 3850585060629929452, guid: 6642f52d230b379469473ef24ef1c2c1, type: 3}
+  m_Sprite: {fileID: -4746696807399698978, guid: edb215a228a4de74db323827c8d9d4d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

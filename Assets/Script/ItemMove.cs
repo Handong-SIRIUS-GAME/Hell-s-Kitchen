@@ -4,25 +4,47 @@ public class ItemMove : MonoBehaviour
 {
     public enum MoveMode
     {
-        Horizontal = 1, // ì¢Œìš° ì´ë™
-        Vertical = 2,   // ìœ„ì•„ë˜ ì´ë™
-        Circle   = 3,   // ì› ìš´ë™
-        Teleport = 4    // ìˆœê°„ì´ë™
+<<<<<<< Updated upstream
+        Horizontal = 1, // ì¢Œìš° ?´ë™
+        Vertical = 2,   // ?„ì•„???´ë™
+        Circle   = 3,   // ???´ë™
+        Teleport = 4    // ?œê°„?´ë™
     }
 
-    [Header("ê¸°ë³¸ ì„¤ì •")]
-    public MoveMode mode = MoveMode.Horizontal; // ì¸ìŠ¤í™í„°ì—ì„œ ëª¨ë“œ ì„ íƒ
-    public float distance = 2f;                  // ì¢Œìš°/ìœ„ì•„ë˜ ì´ë™ ê±°ë¦¬
-    public float speed = 2f;                     // ì´ë™/íšŒì „ ì†ë„
+    [Header("ê¸°ë³¸ ?¤ì •")]
+    public MoveMode mode = MoveMode.Horizontal; // ?¸ìŠ¤?™í„°?ì„œ ëª¨ë“œ ? íƒ
+    public float distance = 2f;                  // ì¢Œìš°/?„ì•„???´ë™ ê±°ë¦¬
+    public float speed = 2f;                     // ?´ë™/?Œì „ ?ë„
 
-    [Header("ì› ìš´ë™ ì„¤ì • (Circle ëª¨ë“œ ì‚¬ìš©)")]
-    public float radius = 2f;                    // ì› ë°˜ì§€ë¦„
+    [Header("???´ë™ ?¤ì • (Circle ëª¨ë“œ ?¬ìš©)")]
+    public float radius = 2f;                    // ??ë°˜ì?ë¦?
 
-    [Header("ìˆœê°„ì´ë™ ì„¤ì • (Teleport ëª¨ë“œ ì‚¬ìš©)")]
-    public Transform point1;                     // 1ë²ˆ ìœ„ì¹˜
-    public Transform point2;                     // 2ë²ˆ ìœ„ì¹˜
-    public Transform point3;                     // 3ë²ˆ ìœ„ì¹˜
-    public float teleportInterval = 1.0f;        // ëª‡ ì´ˆë§ˆë‹¤ ìˆœê°„ì´ë™í• ì§€
+    [Header("?œê°„?´ë™ ?¤ì • (Teleport ëª¨ë“œ ?¬ìš©)")]
+    public Transform point1;                     // 1ë²??„ì¹˜
+    public Transform point2;                     // 2ë²??„ì¹˜
+    public Transform point3;                     // 3ë²??„ì¹˜
+    public float teleportInterval = 1.0f;        // ëª?ì´ˆë§ˆ???œê°„?´ë™? ì?
+=======
+        Horizontal = 1, // ÁÂ¿ì ÀÌµ¿
+        Vertical = 2,   // À§¾Æ·¡ ÀÌµ¿
+        Circle = 3,   // ¿ø ¿îµ¿
+        Teleport = 4    // ¼ø°£ÀÌµ¿
+    }
+
+    [Header("±âº» ¼³Á¤")]
+    public MoveMode mode = MoveMode.Horizontal; // ÀÎ½ºÆåÅÍ¿¡¼­ ¸ğµå ¼±ÅÃ
+    public float distance = 2f;                  // ÁÂ¿ì/À§¾Æ·¡ ÀÌµ¿ °Å¸®
+    public float speed = 2f;                     // ÀÌµ¿/È¸Àü ¼Óµµ
+
+    [Header("¿ø ¿îµ¿ ¼³Á¤ (Circle ¸ğµå »ç¿ë)")]
+    public float radius = 2f;                    // ¿ø ¹İÁö¸§
+
+    [Header("¼ø°£ÀÌµ¿ ¼³Á¤ (Teleport ¸ğµå »ç¿ë)")]
+    public Transform point1;                     // 1¹ø À§Ä¡
+    public Transform point2;                     // 2¹ø À§Ä¡
+    public Transform point3;                     // 3¹ø À§Ä¡
+    public float teleportInterval = 1.0f;        // ¸î ÃÊ¸¶´Ù ¼ø°£ÀÌµ¿ÇÒÁö
+>>>>>>> Stashed changes
 
     private Vector3 startPos;
     private float teleportTimer = 0f;
@@ -32,7 +54,11 @@ public class ItemMove : MonoBehaviour
     {
         startPos = transform.position;
 
-        // Teleport ëª¨ë“œì¼ ë•Œ ì‹œì‘ ìœ„ì¹˜ë¥¼ ì²« í¬ì¸íŠ¸ë¡œ ë§ì¶°ì¤Œ (ìˆìœ¼ë©´)
+<<<<<<< Updated upstream
+        // Teleport ëª¨ë“œ?????œì‘ ?„ì¹˜ë¥?ì²??¬ì¸?¸ë¡œ ë§ì¶°ì¤?(?ˆìœ¼ë©?
+=======
+        // Teleport ¸ğµåÀÏ ¶§ ½ÃÀÛ À§Ä¡¸¦ Ã¹ Æ÷ÀÎÆ®·Î ¸ÂÃçÁÜ (ÀÖÀ¸¸é)
+>>>>>>> Stashed changes
         if (mode == MoveMode.Teleport)
         {
             Transform first = GetTeleportTarget(0);
@@ -63,21 +89,33 @@ public class ItemMove : MonoBehaviour
         }
     }
 
-    // 1ë²ˆ ëª¨ë“œ: ì¢Œìš° ì´ë™
+<<<<<<< Updated upstream
+    // 1ë²?ëª¨ë“œ: ì¢Œìš° ?´ë™
+=======
+    // 1¹ø ¸ğµå: ÁÂ¿ì ÀÌµ¿
+>>>>>>> Stashed changes
     void MoveHorizontal()
     {
         float newX = startPos.x + Mathf.Sin(Time.time * speed) * distance;
         transform.position = new Vector3(newX, startPos.y, startPos.z);
     }
 
-    // 2ë²ˆ ëª¨ë“œ: ìœ„ì•„ë˜ ì´ë™
+<<<<<<< Updated upstream
+    // 2ë²?ëª¨ë“œ: ?„ì•„???´ë™
+=======
+    // 2¹ø ¸ğµå: À§¾Æ·¡ ÀÌµ¿
+>>>>>>> Stashed changes
     void MoveVertical()
     {
         float newY = startPos.y + Mathf.Sin(Time.time * speed) * distance;
         transform.position = new Vector3(startPos.x, newY, startPos.z);
     }
 
-    // 3ë²ˆ ëª¨ë“œ: ì›ì„ ê·¸ë¦¬ë©´ì„œ ì´ë™
+<<<<<<< Updated upstream
+    // 3ë²?ëª¨ë“œ: ?ì„ ê·¸ë¦¬ë©´ì„œ ?´ë™
+=======
+    // 3¹ø ¸ğµå: ¿øÀ» ±×¸®¸é¼­ ÀÌµ¿
+>>>>>>> Stashed changes
     void MoveCircle()
     {
         float t = Time.time * speed;
@@ -86,7 +124,11 @@ public class ItemMove : MonoBehaviour
         transform.position = new Vector3(newX, newY, startPos.z);
     }
 
-    // 4ë²ˆ ëª¨ë“œ: 1,2,3ë²ˆ ìœ„ì¹˜ë¥¼ ìˆœì„œëŒ€ë¡œ ìˆœê°„ì´ë™
+<<<<<<< Updated upstream
+    // 4ë²?ëª¨ë“œ: 1,2,3ë²??„ì¹˜ë¥??œì„œ?€ë¡??œê°„?´ë™
+=======
+    // 4¹ø ¸ğµå: 1,2,3¹ø À§Ä¡¸¦ ¼ø¼­´ë·Î ¼ø°£ÀÌµ¿
+>>>>>>> Stashed changes
     void TeleportMove()
     {
         teleportTimer += Time.deltaTime;
@@ -94,7 +136,11 @@ public class ItemMove : MonoBehaviour
         {
             teleportTimer = 0f;
 
-            teleportIndex = (teleportIndex + 1) % 3; // 0 â†’ 1 â†’ 2 â†’ 0 â€¦
+<<<<<<< Updated upstream
+            teleportIndex = (teleportIndex + 1) % 3; // 0 ??1 ??2 ??0 ??
+=======
+            teleportIndex = (teleportIndex + 1) % 3; // 0 ¡æ 1 ¡æ 2 ¡æ 0 ¡¦
+>>>>>>> Stashed changes
 
             Transform target = GetTeleportTarget(teleportIndex);
             if (target != null)
@@ -104,7 +150,11 @@ public class ItemMove : MonoBehaviour
         }
     }
 
-    // ì¸ë±ìŠ¤ì— ë”°ë¼ point1/2/3 ë°˜í™˜
+<<<<<<< Updated upstream
+    // ?¸ë±?¤ì— ?°ë¼ point1/2/3 ë°˜í™˜
+=======
+    // ÀÎµ¦½º¿¡ µû¶ó point1/2/3 ¹İÈ¯
+>>>>>>> Stashed changes
     Transform GetTeleportTarget(int index)
     {
         switch (index)
@@ -115,4 +165,8 @@ public class ItemMove : MonoBehaviour
             default: return null;
         }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
