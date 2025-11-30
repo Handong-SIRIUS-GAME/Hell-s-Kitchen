@@ -10,48 +10,43 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 7f;
 
     [Header("Ground Check")]
-    public float groundCheckDistance = 1.1f;
-    public LayerMask groundLayer; // 바닥 레이어 (Inspector에서 Ground 체크 필수!)
+    // [수정] 레이 길이를 1.1f -> 1.3f로 살짝 늘려서 확실하게 감지하게 함
+    public float groundCheckDistance = 1.3f;
+    public LayerMask groundLayer; // [중요] Inspector에서 바닥 레이어를 꼭 체크하세요!
 
     private Rigidbody2D rb;
     private Animator animator;
-    private CapsuleCollider2D playerCollider; // 플레이어의 몸
+    private CapsuleCollider2D playerCollider;
 
     private float moveInputX;
     private bool isGrounded;
     private bool isFacingRight = true;
 
-    // 현재 밟고 있는 바닥 (S키 누르면 이걸 뚫음)
+    // 현재 밟고 있는 바닥
     private GameObject currentGroundObject;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        // 플레이어의 물리 콜라이더 (Trigger 아님!)
         playerCollider = GetComponent<CapsuleCollider2D>();
     }
 
     private void Update()
     {
-        // 1. 방향 전환
         Flip();
-
-        // 2. 애니메이션
         animator.SetFloat("Speed", Mathf.Abs(moveInputX));
         animator.SetBool("isJumping", !isGrounded);
     }
 
     private void FixedUpdate()
     {
-        // 3. 물리 이동
+        // Unity 6Preview가 아니라면 rb.velocity 사용
+        // Unity 6라면 rb.linearVelocity 유지
         rb.linearVelocity = new Vector2(moveInputX * moveSpeed, rb.linearVelocity.y);
 
-        // 4. 바닥 체크
         CheckGrounded();
     }
-
-    // --- 외부 호출 함수 ---
 
     public void SetMoveInput(float x)
     {
@@ -60,54 +55,55 @@ public class PlayerMovement : MonoBehaviour
 
     public void TryJump()
     {
-        if (isGrounded)
+        // [디버그] 점프가 안 되면 이 로그가 뜨는지 확인
+        if (!isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            // Debug.Log("점프 실패: 공중에 있음");
+            return;
         }
+
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
     }
 
-    // [핵심] S키를 눌렀을 때 호출됨
     public void TryJumpDown()
     {
-        // 바닥에 서 있다면, 무조건 뚫고 내려가기 시도
+        // 바닥에 있고 바닥 오브젝트를 감지했다면
         if (isGrounded && currentGroundObject != null)
         {
             StartCoroutine(PassThroughFloor());
         }
         else
         {
-            Debug.Log("공중이거나 밟고 있는 바닥이 없어서 내려갈 수 없습니다.");
+            Debug.Log($"내려가기 실패: 바닥 감지({isGrounded}), 오브젝트({currentGroundObject})");
         }
     }
 
-    // 바닥 뚫기 코루틴
     private IEnumerator PassThroughFloor()
     {
         Collider2D groundCollider = currentGroundObject.GetComponent<Collider2D>();
 
         if (groundCollider != null)
         {
-            // 0.5초 동안 플레이어와 바닥의 충돌을 끈다 (유령처럼 통과)
+            Debug.Log("아래로 점프 수행!");
+            // 1. 충돌 끄기
             Physics2D.IgnoreCollision(playerCollider, groundCollider, true);
 
             yield return new WaitForSeconds(0.5f);
 
-            // 다시 충돌을 켠다
+            // 2. 충돌 켜기
             Physics2D.IgnoreCollision(playerCollider, groundCollider, false);
         }
     }
 
-    // --- 내부 유틸 ---
-
     private void CheckGrounded()
     {
-        // 발밑으로 레이를 쏴서 닿는 게 있는지 확인
+        // 발밑으로 레이 쏘기 (위치, 방향, 길이, 레이어마스크)
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, groundLayer);
 
         if (hit.collider != null)
         {
             isGrounded = true;
-            currentGroundObject = hit.collider.gameObject; // 밟고 있는 바닥 저장
+            currentGroundObject = hit.collider.gameObject;
         }
         else
         {
@@ -129,6 +125,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        // Scene 화면에서 빨간 선이 발바닥보다 아래로 내려오는지 확인하세요!
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + Vector3.down * groundCheckDistance);
     }

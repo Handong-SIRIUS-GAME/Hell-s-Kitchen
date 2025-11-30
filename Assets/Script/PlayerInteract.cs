@@ -5,7 +5,6 @@ public class PlayerInteract : MonoBehaviour
     [Header("Interact Settings")]
     [SerializeField] private InteractableItem defaultInteractable;
 
-    // [추가됨] 아이템이 매달릴 위치 (플레이어 머리 위)
     [Tooltip("아이템을 들었을 때 위치할 플레이어의 자식 오브젝트 (머리 위)")]
     public Transform itemHoldPoint;
 
@@ -16,9 +15,18 @@ public class PlayerInteract : MonoBehaviour
     private bool isInKitchenArea = false;
     private KitchenArea currentKitchen = null;
 
+    // [추가됨] 애니메이션 제어를 위한 컴포넌트
+    private Animator animator;
+
+    private void Awake()
+    {
+        // 플레이어에게 붙어있는 Animator 컴포넌트 가져오기
+        animator = GetComponent<Animator>();
+    }
+
     public void TryInteract()
     {
-        // 1. 아이템을 들고 있을 때 -> 내려놓기(Drop) 시도
+        // 1. 내려놓기
         if (heldItem != null)
         {
             if (isInKitchenArea && currentKitchen != null)
@@ -30,7 +38,7 @@ public class PlayerInteract : MonoBehaviour
                 Debug.Log("여기에 아이템을 둘 수 없습니다. 부엌으로 가세요.");
             }
         }
-        // 2. 아이템을 안 들고 있을 때 -> 줍기(Pickup) 시도
+        // 2. 줍기
         else
         {
             if (defaultInteractable != null)
@@ -47,39 +55,42 @@ public class PlayerInteract : MonoBehaviour
 
     private void Pickup(GameObject itemObj)
     {
-        Debug.Log(itemObj.name + " 아이템을 획득했다!");
-        heldItem = itemObj;
+        // [수정 1] 아이템 이름 예쁘게 출력하기
+        // InteractableItem 스크립트 정보를 먼저 가져옵니다.
+        InteractableItem itemScript = itemObj.GetComponent<InteractableItem>();
 
-        // 1. 둥둥 떠다니는 효과 끄기 (InteractableItem 스크립트 기능)
-        InteractableItem itemScript = heldItem.GetComponent<InteractableItem>();
+        string displayName = itemObj.name; // 기본값은 오브젝트 이름
         if (itemScript != null)
         {
-            itemScript.OnPickedUp();
+            displayName = itemScript.itemName; // 설정된 이름("양상추" 등)이 있으면 덮어쓰기
+            itemScript.OnPickedUp(); // 둥둥 떠다니기 멈춤
         }
 
-        // 2. [수정됨] 물리 충돌 끄기 (중요: 머리 위에 있는 아이템이 플레이어를 밀면 안됨)
+        Debug.Log($"<color=yellow>{displayName}</color>을(를) 획득했습니다!");
+
+        heldItem = itemObj;
+
+        // 물리 충돌 끄기
         Collider2D itemCol = heldItem.GetComponent<Collider2D>();
-        if (itemCol != null)
-        {
-            itemCol.enabled = false;
-        }
+        if (itemCol != null) itemCol.enabled = false;
 
-        // 3. [핵심] 아이템을 '머리 위 위치(itemHoldPoint)'의 자식으로 설정
+        // 머리 위로 이동
         if (itemHoldPoint != null)
         {
             heldItem.transform.SetParent(itemHoldPoint);
-            // 위치를 (0,0,0)으로 초기화하면 itemHoldPoint의 정확한 위치에 붙습니다.
             heldItem.transform.localPosition = Vector3.zero;
         }
         else
         {
-            // 만약 itemHoldPoint를 안 만들었다면 그냥 플레이어 중심에 붙임
             heldItem.transform.SetParent(transform);
-            heldItem.transform.localPosition = new Vector3(0, 1.5f, 0); // 대략 머리 위
+            heldItem.transform.localPosition = new Vector3(0, 1.5f, 0);
         }
 
-        // 4. [수정됨] 아이템을 숨기지 않음! (SetActive(false) 삭제)
-        // heldItem.SetActive(false); <--- 이 코드를 지웠습니다.
+        // [수정 2] 애니메이션 상태 변경 (들고 있음!)
+        if (animator != null)
+        {
+            animator.SetBool("isHolding", true);
+        }
 
         canInteract = false;
         targetItem = null;
@@ -93,12 +104,16 @@ public class PlayerInteract : MonoBehaviour
         bool success = kitchen.AddIngredient(itemData);
         if (success)
         {
-            Debug.Log(itemData.itemName + " 아이템을 부엌에 둠.");
+            Debug.Log($"{itemData.itemName}을(를) 부엌에 제출했습니다.");
 
-            // [핵심] 여기서 아이템을 파괴하므로 머리 위에서 사라짐
             Destroy(heldItem);
-
             heldItem = null;
+
+            // [수정 2] 애니메이션 상태 복귀 (내려놨음!)
+            if (animator != null)
+            {
+                animator.SetBool("isHolding", false);
+            }
         }
         else
         {
@@ -106,7 +121,7 @@ public class PlayerInteract : MonoBehaviour
         }
     }
 
-    // ───── 트리거 감지 로직 (이전과 동일) ─────
+    // ───── 트리거 감지 로직 ─────
     private void OnTriggerEnter2D(Collider2D other)
     {
         InteractableItem item = other.GetComponent<InteractableItem>();
@@ -114,6 +129,8 @@ public class PlayerInteract : MonoBehaviour
         {
             canInteract = true;
             targetItem = item;
+            // 여기서도 이름을 예쁘게 출력
+            Debug.Log("아이템 발견: " + item.itemName);
         }
 
         KitchenArea kitchen = other.GetComponent<KitchenArea>();
